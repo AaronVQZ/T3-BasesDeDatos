@@ -21,15 +21,15 @@ class Command(BaseCommand):
             self.stderr.write(self.style.ERROR(f"Archivo no encontrado: {xml_path}"))
             return
 
-        # Quitar la cabecera <?xml ...?> si existe
+        # Quitar la cabecera xml si existe
         xml_content = re.sub(r"<\?xml[^>]*\?>\s*", "", xml_content).strip()
 
         # 2) Asegurarnos de que la conexión esté abierta
         connection.ensure_connection()
-        conn = connection.connection  # objeto DBAPI (pyodbc, pymssql, etc.)
+        conn = connection.connection 
 
         try:
-            # 3) Ejecutar el Stored Procedure usando conn.execute()
+            # 3) Ejecutar el Stored Procedure
             sql = """
             DECLARE @outCode INT;
             EXEC dbo.SpCargarCatalogos 
@@ -37,15 +37,13 @@ class Command(BaseCommand):
                 @outResultCode = @outCode OUTPUT;
             SELECT @outCode;
             """
-            # Pasamos xml_content como parámetro (placeholder '?' para pyodbc/pymssql)
-            cursor_obj = conn.execute(sql, xml_content)
+            resultado_sql = conn.execute(sql, xml_content)
 
             # 4) Leer un registro del resultado
-            row = cursor_obj.fetchone()
+            row = resultado_sql.fetchone()
             out_code = row[0] if row else None
 
-            # 5) Cerrar el objeto cursor
-            cursor_obj.close()
+            resultado_sql.close()
 
             if out_code == 0:
                 self.stdout.write(self.style.SUCCESS("Catálogos cargados con éxito."))
@@ -54,4 +52,3 @@ class Command(BaseCommand):
 
         except Exception as e:
             self.stderr.write(self.style.ERROR(f"Fallo al ejecutar SpCargarCatalogos: {e}"))
-
