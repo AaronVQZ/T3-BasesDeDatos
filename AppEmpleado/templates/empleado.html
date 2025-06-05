@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="{% static 'favicon.png' %}" type="image/png">
+  <link rel="stylesheet" href="{% static 'estilos.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <title>Control de Empleados</title>
+</head>
+<body>
+  <div class="contenedor_titulo">
+    <h1 id="titulo">Empleados</h1>
+  </div>
+
+  <div class="contenedor_busqueda">
+    <input type="text" id="search-bar" class="search-input" placeholder="Buscar empleados..." value="{{ search_query }}">
+    <button id="search-button" class="search-button">Buscar</button>
+  </div>
+  <br>
+  <br>
+  <div class="contenedor_lista">
+    <table class="tabla" id="tabla_empleados">
+      <tr class="encabezado">
+        <th>Nombre</th>
+        <th>Puesto</th>
+        <th>Acciones</th>
+      </tr>
+      {% for empleado in empleados %}
+      <tr>
+        <td>{{ empleado.nombre }}</td>
+        <td>{{ empleado.identificacion }}</td>
+        <td class="acciones">
+          <button class="boton_consultar" onclick="consultarEmpleado('{{ empleado.identificacion }}')">Consultar</button>
+          <button class="boton_modificar" onclick="modificarEmpleado('{{ empleado.identificacion }}')">Modificar</button>
+          <button class="boton_borrar" onclick="borrarEmpleado('{{ empleado.identificacion }}')">Borrar</button>
+          <button class="boton_movimientos" onclick="verMovimientos('{{empleado.identificacion}}','{{empleado.nombre}}')">Movimientos</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="contenedor_botones">
+    <button id="boton_agregar">Agregar Empleado</button>
+  </div>
+
+  <!-- Modal Insertar Empleado -->
+  <div id="modalInsertarEmpleado" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar">&times;</span>
+      <h2>Insertar Nuevo Empleado</h2>
+      <form id="formInsertarEmpleado" method="POST">
+        {% csrf_token %}
+        <label for="identificacion">Documento de Identidad:</label>
+        <input type="text" id="identificacion" name="identificacion" required>
+        <br><br>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        <br><br>
+        <label for="puesto">Puesto:</label>
+        <select id="puesto" name="puesto" required>
+          <option value="">-- Seleccione --</option>
+          <option value="Albañil">Albañil</option>
+          <option value="Asistente">Asistente</option>
+          <option value="Cajero">Cajero</option>
+          <option value="Camarero">Camarero</option>
+          <option value="Conductor">Conductor</option>
+          <option value="Conserje">Conserje</option>
+          <option value="Cuidador">Cuidador</option>
+          <option value="Fontanero">Fontanero</option>
+          <option value="Niñera">Niñera</option>
+          <option value="Recepcionista">Recepcionista</option>
+        </select>
+        <br><br>
+        <button type="submit">Insertar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Consultar Empleado -->
+  <div id="modalConsultarEmpleado" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar-consultar">&times;</span>
+      <h2>Información del Empleado</h2>
+      <p><strong>Cédula:</strong> <span id="info-identificacion"></span></p>
+      <p><strong>Nombre:</strong> <span id="info-nombre"></span></p>
+      <p><strong>Puesto:</strong> <span id="info-puesto"></span></p>
+      <p><strong>Saldo Vacaciones:</strong> <span id="info-vacaciones"></span></p>
+    </div>
+  </div>
+
+  <!-- Modal Confirmar Borrado -->
+    <div id="modalBorrarEmpleado" class="modal">
+        <div class="modal-contenido">
+        <span class="cerrar-borrar">&times;</span>
+        <h2>Eliminar Empleado</h2>
+        <p>¿Está seguro de eliminar el siguiente empleado?</p>
+        <p><strong>Cédula:</strong> <span id="borrar-identificacion"></span></p>
+        <p><strong>Nombre:</strong> <span id="borrar-nombre"></span></p>
+        <div class="acciones">
+            <button id="confirmar-borrar">Confirmar</button>
+            <button id="cancelar-borrar">Cancelar</button>
+        </div>
+        </div>
+    </div>
+
+    <!-- Modal Modificar Empleado -->
+    <div id="modalModificarEmpleado" class="modal">
+        <div class="modal-contenido">
+        <span class="cerrar-modificar">&times;</span>
+        <h2>Modificar Empleado</h2>
+        <form id="formModificarEmpleado" method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="ident_old" name="ident_old">
+            
+            <label for="ident_new">Documento de Identidad:</label>
+            <input type="text" id="ident_new" name="ident_new" required>
+            <br><br>
+            
+            <label for="nombre_mod">Nombre:</label>
+            <input type="text" id="nombre_mod" name="nombre" required>
+            <br><br>
+            
+            <label for="puesto_mod">Puesto:</label>
+            <select id="puesto_mod" name="puesto" required>
+            <option value="">-- Seleccione --</option>
+            <option value="Cajero">Cajero</option>
+            <option value="Camarero">Camarero</option>
+            <option value="Cuidador">Cuidador</option>
+            <option value="Conductor">Conductor</option>
+            <option value="Asistente">Asistente</option>
+            <option value="Recepcionista">Recepcionista</option>
+            <option value="Fontanero">Fontanero</option>
+            <option value="Niñera">Niñera</option>
+            <option value="Conserje">Conserje</option>
+            <option value="Albañil">Albañil</option>
+            </select>
+            <br><br>
+            
+            <button type="submit">Guardar Cambios</button>
+        </form>
+        </div>
+    </div>
+
+  <script src="{% static 'script.js' %}"></script>
+</body>
+</html>
