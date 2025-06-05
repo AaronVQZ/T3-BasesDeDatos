@@ -4,3 +4,7 @@ __pycache__/
 db.sqlite3
 *.log
 *.env
+\planillaObrera\settings.py
+
+# Ignore migrations
+planillaObrera/settings.py
