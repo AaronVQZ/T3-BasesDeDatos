@@ -6,7 +6,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.login, name="login"),
     path('login/', include('AppLogin.urls')),
-    path('administrador/', include('AppAdministrador.urls', namespace = 'AppAdministrador')),
-    path('empleado/', include('AppEmpleado.urls', namespace = 'AppEmpleado')),
-    
+    path('administrador/', include('AppAdministrador.urls', namespace='AppAdministrador')),
+    path('empleado/', include('AppEmpleado.urls', namespace='AppEmpleado')),
 ]
