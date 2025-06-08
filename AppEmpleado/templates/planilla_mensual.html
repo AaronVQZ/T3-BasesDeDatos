@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Últimos 12 Meses</title>
+  <link rel="stylesheet" href="{% static 'empleado.css' %}">
+</head>
+<body>
+
+  <div class="contenedor_titulo">
+    <h1>Planilla Mensual (Últimos 12 Meses)</h1>
+  </div>
+
+  {% if meses %}
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Mes</th>
+          <th>Salario Bruto</th>
+          <th>Total Deducciones</th>
+          <th>Salario Neto</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in meses %}
+        <tr>
+          <td>{{ m.mes }}</td>
+          <td>{{ m.salario_bruto }}</td>
+          <td>{{ m.total_deducciones }}</td>
+          <td>{{ m.salario_neto }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay registros mensuales para mostrar.</p>
+  {% endif %}
+
+  <div class="contenedor_botones" style="margin-top:30px;">
+    <a href="{% url 'AppEmpleado:home' %}" class="boton_consulta">← Volver</a>
+  </div>
+
+</body>
+</html>
