@@ -2,14 +2,12 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.db import connection
 import json
-
+from Excepciones import excepciones as excepciones
 
 
 # Create your views here.
 def home(request):
 
-    #search_query = request.GET.get("search", '')
-    print("hereiam")
     try:
         id_usuario = request.session.get("_auth_user_id")
         ip_usuario = request.session.get("_auth_user_ip")
@@ -32,17 +30,24 @@ def obtener_empleados(search_term='',id_usuario=None,ip_usuario=None):
     try:    
         connection.ensure_connection()
         conn = connection.connection
-        
+        codigo_error = 0
+
         empleados = conn.execute("""
+                DECLARE @OutCodigoError INT;
                 EXEC Sp_BuscarEmpleado 
-                @InSearchTerm = ?,
-                @InIdUsuario = ?,
-                @InIpUsuario = ?;
-                """,(search_term, int(id_usuario), str(ip_usuario))).fetchall()
+                @InSearchTerm = ?
+               ,@InIdUsuario = ?
+               ,@InIpUsuario = ?
+               ,@OutCodigoError = ?
+                                 
+                """,(search_term, int(id_usuario), str(ip_usuario), codigo_error)).fetchall()
         
         print("Empleados obtenidos:", empleados)
+        print(codigo_error)
+        if codigo_error != 0:
+            raise excepciones.Error_obtener_empleados()    
         # Se convierten los resultados a una lista de diccionarios
-        empleados_list = [{'nombre': row[0],'puesto': row[1],} for row in empleados]
+        empleados_list = [{'id': row[0], 'nombre': row[1],'puesto': row[2], } for row in empleados]
         return empleados_list if empleados else []
     except Exception as e:
         print(f"Error al obtener empleados: {e}")

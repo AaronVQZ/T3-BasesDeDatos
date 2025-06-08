@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.db import connection
 import json
+from Excepciones import excepciones as excepciones
+
 
 
 
@@ -28,15 +30,28 @@ def login(request):
             connection.ensure_connection()
             conn = connection.connection
 
-
+            codigo_error = 0
             # Validar usuario
-            result = conn.execute("""
-                EXEC dbo.sp_ValidarUsuario @InUsername = ?, @InPassword = ?, @InIpUsuario = ?
-            """, (username, password, ip)).fetchone()
+            result = conn.execute(
+                    """
+                     DECLARE @OutCodigoError INT;
+                     EXEC dbo.sp_ValidarUsuario @InUsername = ?, @InPassword = ?, @InIpUsuario = ?, @OutCodigoError = ?
+                    """,
+                    (username, password, ip, codigo_error)).fetchone()
 
             es_valido, es_admin, id_usuario, mensaje = result
 
+
             print(f"Es válido: {es_valido},Es Administrador {es_admin} Mensaje: {mensaje}")
+            print(f"codigo_error: {codigo_error}")
+
+            if codigo_error != 0:
+                if codigo_error == 1:
+                    raise excepciones.Error_Usuario()
+                elif codigo_error == 2:
+                    raise excepciones.Error_password()
+                else:
+                    raise excepciones.Error()
 
             if es_valido:
                 request.session['_auth_user_id'] = id_usuario
