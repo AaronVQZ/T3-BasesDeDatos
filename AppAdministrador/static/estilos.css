@@ -133,7 +133,7 @@ body {
 .boton_consultar,
 .boton_modificar,
 .boton_movimientos,
-.boton_borrar {
+.boton_borrar{
     padding: 5px 10px;
     border: none;
     border-radius: 4px;
@@ -163,8 +163,33 @@ body {
 .boton_consultar:hover,
 .boton_modificar:hover,
 .boton_movimientos:hover,
-.boton_borrar:hover {
+.boton_borrar:hover,
+#confirmar-borrar:hover,
+#cancelar-borrar:hover 
+{
     opacity: 0.8;
+}
+
+#confirmar-borrar, #cancelar-borrar {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s ease;
+    height: 35px;
+    line-height: 15px;
+}
+
+#confirmar-borrar {
+    background-color: #d9534f; /* Rojo para confirmar borrado */
+    color: white;
+}
+
+#cancelar-borrar {
+    background-color: #5bc0de; /* Azul para cancelar */
+    color: white;
 }
 
 /* Estilos del modal */
@@ -316,4 +341,23 @@ select:focus {
 }
 .swal2-title {
     color: #ffffff !important; 
+}
+
+.acciones-modal {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-modal {
+    width: 150px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s ease;
+    height: 35px;
+    line-height: 15px;
 }

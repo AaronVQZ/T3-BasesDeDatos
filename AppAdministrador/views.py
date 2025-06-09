@@ -161,7 +161,6 @@ def editar_empleado(request):
     return JsonResponse({"success": False, "error": "Método no permitido."}, status=400)
 
 
-
     
 def consultar_empleado(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -190,3 +189,25 @@ def consultar_empleado(request):
             return JsonResponse({"success": False, "error": str(e)}, status=500)
 
     return JsonResponse({"success": False, "error": "Invalid request"}, status=400)
+
+
+def eliminar_empleado(request):
+    if request.method == "POST":
+        id_empleado = request.POST.get('id_empleado', '').strip()
+        id_usuario = request.session.get("_auth_user_id")
+        ip_usuario = request.session.get("_auth_user_ip")
+
+        print(f"Eliminando empleado con ID: {id_empleado}")
+        try:
+            connection.ensure_connection()
+            conn = connection.connection
+            conn.execute(
+                "EXEC dbo.Sp_EliminarEmpleado ?, ?, ?",
+                [int(id_usuario), str(ip_usuario), int(id_empleado), ]
+            )
+            return JsonResponse({"success": True, "mensaje": "Empleado eliminado correctamente"})
+        except Exception as e:
+            print(f"Error al eliminar empleado: {e}")
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "error": "Método no permitido."}, status=400)

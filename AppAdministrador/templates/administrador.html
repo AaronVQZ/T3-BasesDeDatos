@@ -112,7 +112,7 @@
         <td class="acciones">
           <button class="boton_consultar" onclick="consultarEmpleado('{{ empleado.id }}')">Consultar</button>
           <button class="boton_modificar" onclick="modificarEmpleado('{{ empleado.id }}')">Modificar</button>
-          <button class="boton_borrar" onclick="borrarEmpleado('{{ empleado.identificacion }}')">Borrar</button>
+          <button class="boton_borrar" onclick="borrarEmpleado('{{ empleado.id }}','{{empleado.nombre}}')">Borrar</button>
           <button class="boton_movimientos" onclick="verMovimientos('{{empleado.identificacion}}','{{empleado.nombre}}')">Movimientos</button>
         </td>
       </tr>
@@ -137,15 +137,19 @@
   <!-- Modal Confirmar Borrado -->
     <div id="modalBorrarEmpleado" class="modal">
         <div class="modal-contenido">
-        <span class="cerrar-borrar">&times;</span>
+        <span class="cerrar-borrar"></span>
         <h2>Eliminar Empleado</h2>
         <p>¿Está seguro de eliminar el siguiente empleado?</p>
-        <p><strong>Cédula:</strong> <span id="borrar-identificacion"></span></p>
+        
         <p><strong>Nombre:</strong> <span id="borrar-nombre"></span></p>
-        <div class="acciones">
-            <button id="confirmar-borrar">Confirmar</button>
-            <button id="cancelar-borrar">Cancelar</button>
-        </div>
+        <form id="formEliminarEmpleado" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="id_empleado" id="borrar_id_empleado">          
+          <div class="acciones-modal">
+              <button id="confirmar-borrar" type="submit" class="btn-modal">Confirmar</button>
+              <button id="cancelar-borrar" type="button" class="btn-modal">Cancelar</button>
+          </div>
+        </form>
         </div>
     </div>
 
