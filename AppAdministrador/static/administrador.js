@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     formIns.addEventListener('submit', e => {
         e.preventDefault();
-        fetch('insertar-empleado/', {
+        fetch('insertar_empleado/', {
             method: 'POST',
             body: new FormData(formIns),
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -317,4 +317,42 @@ function verMovimientos(identificacion, nombre) {
     );
     
 
+}
+
+// Control de visibilidad de campos de empleado
+const tipoUsuario = document.getElementById('tipo_usuario');
+const camposEmpleado = document.getElementById('campos_empleado');
+const idPuesto = document.getElementById('id_puesto');
+const idDepartamento = document.getElementById('id_departamento');
+const formInsertarEmpleado = document.getElementById('formInsertarEmpleado');
+
+if (tipoUsuario) {
+    tipoUsuario.addEventListener('change', function() {
+        const esEmpleado = this.value === '2';
+        camposEmpleado.style.display = esEmpleado ? 'block' : 'none';
+        
+        // Solo hacer los campos requeridos si es empleado
+        if (esEmpleado) {
+            idPuesto.setAttribute('required', '');
+            idDepartamento.setAttribute('required', '');
+        } else {
+            idPuesto.removeAttribute('required');
+            idDepartamento.removeAttribute('required');
+            // Limpiar los valores cuando no son requeridos
+            idPuesto.value = '';
+            idDepartamento.value = '';
+        }
+    });
+}
+
+// Validación del formulario
+if (formInsertarEmpleado) {
+    formInsertarEmpleado.addEventListener('submit', function(e) {
+        if (tipoUsuario.value === '2') {
+            if (!idPuesto.value || !idDepartamento.value) {
+                e.preventDefault();
+                alert('Por favor complete todos los campos requeridos');
+            }
+        }
+    });
 }

@@ -7,5 +7,6 @@ app_name = 'AppAdministrador'
 urlpatterns = [
     path("", views.home, name="home"),
     path("buscar_empleados/", views.buscar_empleados, name="buscar_empleados"),
+    path("insertar_empleado/", views.insertar_empleado, name="insertar_empleado"),
     
 ]
