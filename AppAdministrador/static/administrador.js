@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
 //-------------------------------------------------------------------------------------------------------------------------
     // Función para actualizar la tabla con los empleados
     function actualizarTabla(empleados) {
-        console.log('Empleados:', empleados);
         // Envabezado de la Tabla
         let tableContent = `
             <tr class="encabezado">
@@ -29,10 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${empleado.nombre}</td>
                     <td>${empleado.puesto}</td>
                     <td class="acciones">
-                        <button class="boton_consultar" onclick="consultarEmpleado('${empleado.identificacion}')">
+                        <button class="boton_consultar" onclick="consultarEmpleado('${empleado.id}')">
                             Consultar
                         </button>
-                        <button class="boton_modificar" onclick="modificarEmpleado('${empleado.identificacion}')">
+                        <button class="boton_modificar" onclick="modificarEmpleado('${empleado.id}')">
                             Modificar
                         </button>
                         <button class="boton_borrar" onclick="borrarEmpleado('${empleado.identificacion}', '${empleado.nombre}')">
@@ -126,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     formIns.addEventListener('submit', e => {
         e.preventDefault();
-        fetch('insertar-empleado/', {
+        fetch('insertar_empleado/', {
             method: 'POST',
             body: new FormData(formIns),
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -156,8 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //------------------------------------------------------------------------------------------------------------------------
     // Modal de Consulta para ver información de un empleado
-    window.consultarEmpleado = function(identificacion) {
-        fetch(`consultar-empleado/?identificacion=${encodeURIComponent(identificacion)}`, {
+    window.consultarEmpleado = function(id) {
+        fetch(`consultar_empleado/?id_empleado=${encodeURIComponent(id)}`, {
             method: 'GET',
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
@@ -165,19 +164,24 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 const emp = data.empleado;
-                document.getElementById('info-identificacion').textContent = emp.identificacion;
                 document.getElementById('info-nombre').textContent        = emp.nombre;
+                document.getElementById('info-identificacion').textContent = emp.valorDocumento;
+                document.getElementById('info-fecha-nacimiento').textContent = emp.fechaNacimiento;
                 document.getElementById('info-puesto').textContent        = emp.puesto;
-                document.getElementById('info-vacaciones').textContent    = emp.saldoVacaciones.toFixed(2);
+                document.getElementById('info-departamento').textContent  = emp.departamento;
                 document.getElementById('modalConsultarEmpleado').style.display = 'flex';
             } else {
                 alert(data.error || 'Error al obtener información');
             }
         })
         .catch(err => { console.error(err); alert('Error de conexión'); });
-    };
-    const spanCerrarConsultar = document.querySelector('.cerrar-consultar');
-    spanCerrarConsultar.addEventListener('click', () => document.getElementById('modalConsultarEmpleado').style.display = 'none');
+    };    const spanCerrarConsultar = document.querySelector('.cerrar-consultar');
+    const modalConsultar = document.getElementById('modalConsultarEmpleado');
+    
+    spanCerrarConsultar.addEventListener('click', () => modalConsultar.style.display = 'none');
+    window.addEventListener('click', e => {
+        if (e.target === modalConsultar) modalConsultar.style.display = 'none';
+    });
 
 //------------------------------------------------------------------------------------------------------------------------
     // Modal Borrar. Para borardo logico de un empleado
@@ -187,7 +191,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('borrar-nombre').textContent         = nombre;
         document.getElementById('modalBorrarEmpleado').style.display = 'flex';
     };
-    document.querySelector('.cerrar-borrar').addEventListener('click', () => document.getElementById('modalBorrarEmpleado').style.display = 'none');
+    const spanCerrarBorrar = document.querySelector('.cerrar-borrar');
+    const modalBorrar = document.getElementById('modalBorrarEmpleado');
+    
+    spanCerrarBorrar.addEventListener('click', () => modalBorrar.style.display = 'none');
+    window.addEventListener('click', e => {
+        if (e.target === modalBorrar) modalBorrar.style.display = 'none';
+    });
 
     const csrfToken = getCookie('csrftoken');
 
@@ -237,8 +247,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     //------------------------------------------------------------------------------------------------------------------------
     // Modal Modificar
-    window.modificarEmpleado = function(identificacion) {
-        fetch(`consultar-empleado/?identificacion=${encodeURIComponent(identificacion)}`, {
+    window.modificarEmpleado = function(id) {
+        fetch(`consultar_empleado/?id_empleado=${encodeURIComponent(id)}`, {
             method: 'GET',
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
@@ -246,19 +256,24 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (!data.success) return alert(data.error || 'Empleado no encontrado');
             const emp = data.empleado;
-            document.getElementById('ident_old').value  = emp.identificacion;
-            document.getElementById('ident_new').value  = emp.identificacion;
-            document.getElementById('nombre_mod').value = emp.nombre;
-            document.getElementById('puesto_mod').value = emp.puesto;
+            document.getElementById('E-id-empleado').value        = id;
+            document.getElementById('E-nombre').placeholder        = emp.nombre;
+            document.getElementById('E-identificacion').placeholder = emp.valorDocumento;
             document.getElementById('modalModificarEmpleado').style.display = 'flex';
         })
         .catch(err => { console.error(err); alert('Error de conexión'); });
-    };
-    document.querySelector('.cerrar-modificar').addEventListener('click', () => document.getElementById('modalModificarEmpleado').style.display = 'none');
+    };    const spanCerrarModificar = document.querySelector('.cerrar-modificar');
+    const modalModificar = document.getElementById('modalModificarEmpleado');
+    
+    spanCerrarModificar.addEventListener('click', () => modalModificar.style.display = 'none');
+    window.addEventListener('click', e => {
+        if (e.target === modalModificar) modalModificar.style.display = 'none';
+        if (e.target === modalIns) modalIns.style.display = 'none';
+    });
 
     document.getElementById('formModificarEmpleado').addEventListener('submit', function(e) {
         e.preventDefault();
-        fetch('update-empleado/', {
+        fetch('editar_empleado/', {
             method: 'POST',
             body: new FormData(this),
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -317,4 +332,42 @@ function verMovimientos(identificacion, nombre) {
     );
     
 
+}
+
+// Control de visibilidad de campos de empleado
+const tipoUsuario = document.getElementById('tipo_usuario');
+const camposEmpleado = document.getElementById('campos_empleado');
+const idPuesto = document.getElementById('id_puesto');
+const idDepartamento = document.getElementById('id_departamento');
+const formInsertarEmpleado = document.getElementById('formInsertarEmpleado');
+
+if (tipoUsuario) {
+    tipoUsuario.addEventListener('change', function() {
+        const esEmpleado = this.value === '2';
+        camposEmpleado.style.display = esEmpleado ? 'block' : 'none';
+        
+        // Solo hacer los campos requeridos si es empleado
+        if (esEmpleado) {
+            idPuesto.setAttribute('required', '');
+            idDepartamento.setAttribute('required', '');
+        } else {
+            idPuesto.removeAttribute('required');
+            idDepartamento.removeAttribute('required');
+            // Limpiar los valores cuando no son requeridos
+            idPuesto.value = '';
+            idDepartamento.value = '';
+        }
+    });
+}
+
+// Validación del formulario
+if (formInsertarEmpleado) {
+    formInsertarEmpleado.addEventListener('submit', function(e) {
+        if (tipoUsuario.value === '2') {
+            if (!idPuesto.value || !idDepartamento.value) {
+                e.preventDefault();
+                alert('Por favor complete todos los campos requeridos');
+            }
+        }
+    });
 }
