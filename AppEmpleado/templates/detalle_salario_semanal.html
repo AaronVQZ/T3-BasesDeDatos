@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle Salario – Semana {{ semana_id }}</title>
+  <link rel="stylesheet" href="{% static 'consultaSemanal.css' %}">
+</head>
+<body>
+  <div class="contenedor_titulo">
+    <h1>Detalle Salario – Semana {{ semana_id }}</h1>
+  </div>
+
+  {% if detalle %}
+    <div class="tabla-container">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Día</th>
+            <th>Hora Entrada</th>
+            <th>Hora Salida</th>
+            <th>Horas Ordinarias</th>
+            <th>Monto Ordinarias</th>
+            <th>Horas Extra Normales</th>
+            <th>Monto Extra Normales</th>
+            <th>Horas Extra Dobles</th>
+            <th>Monto Extra Dobles</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in detalle %}
+          <tr>
+            <td>{{ r.Dia|date:"d M Y" }}</td>
+            <td>{{ r.HoraEntrada|time:"H:i" }}</td>
+            <td>{{ r.HoraSalida|time:"H:i" }}</td>
+            <td>{{ r.HorasOrdinarias }}</td>
+            <td>{{ r.MontoOrdinarias }}</td>
+            <td>{{ r.HorasExtraNormales }}</td>
+            <td>{{ r.MontoExtraNormales }}</td>
+            <td>{{ r.HorasExtraDobles }}</td>
+            <td>{{ r.MontoExtraDobles }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay registros de asistencia para esta semana.</p>
+  {% endif %}
+
+  <div class="contenedor_botones" style="margin-top:30px;">
+    <a href="{% url 'AppEmpleado:planilla_semanal' %}" class="boton_consulta">← Volver</a>
+  </div>
+</body>
+</html>

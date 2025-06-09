@@ -1,10 +1,11 @@
+{# AppEmpleado/templates/planilla_semanal.html #}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Últimas 15 Planillas Semanales</title>
-  <link rel="stylesheet" href="{% static 'empleado.css' %}">
+  <link rel="stylesheet" href="{% static 'consultaSemanal.css' %}">
 </head>
 <body>
 
@@ -16,26 +17,43 @@
     <table class="tabla">
       <thead>
         <tr>
+          <th>Id Semana</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Fin</th>
           <th>Salario Bruto</th>
           <th>Total Deducciones</th>
           <th>Salario Neto</th>
           <th>Horas Ordinarias</th>
-          <th>Horas Extra Normales</th>
+          <th>Horas Extra</th>
           <th>Horas Extra Dobles</th>
         </tr>
       </thead>
       <tbody>
         {% for p in planillas %}
-        <tr>
-          <td>{{ p.salario_bruto }}</td>
-          <td>{{ p.total_deducciones }}</td>
-          <td>{{ p.salario_neto }}</td>
-          <td>{{ p.horas_ordinarias }}</td>
-          <td>{{ p.horas_extra_normales }}</td>
-          <td>{{ p.horas_extra_dobles }}</td>
-        </tr>
+          <tr>
+            <td>{{ p.IdSemanaPlanilla }}</td>
+            <td>{{ p.FechaInicio }}</td>
+            <td>{{ p.FechaFin }}</td>
+
+            <td>
+              <a href="{% url 'AppEmpleado:detalle_salario_semanal' p.IdSemanaPlanilla %}">
+                {{ p.SalarioBruto }}
+              </a>
+            </td>
+
+            <td>
+              <a href="{% url 'AppEmpleado:detalle_deducciones_semanal' p.IdSemanaPlanilla %}">
+                {{ p.TotalDeducciones }}
+              </a>
+            </td>
+
+            <td>{{ p.SalarioNeto }}</td>
+            <td>{{ p.HorasOrdinarias }}</td>
+            <td>{{ p.HorasExtra }}</td>
+            <td>{{ p.HorasExtraDobles }}</td>
+          </tr>
         {% endfor %}
-      </tbody>
+        </tbody>
     </table>
   {% else %}
     <p>No hay planillas semanales para mostrar.</p>

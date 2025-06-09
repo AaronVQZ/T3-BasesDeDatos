@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Detalle Deducciones Semana {{ semana_id }}</title>
+  <link rel="stylesheet" href="{% static 'consultaSemanal.css' %}">
+</head>
+<body>
+  <div class="contenedor_titulo">
+    <h1>Deducciones – Semana {{ semana_id }}</h1>
+  </div>
+
+  {% if detalle %}
+    <div class="tabla-container">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Nombre Deducción</th>
+            <th>% Aplicado</th>
+            <th>Monto Deducido</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in detalle %}
+          <tr>
+            <td>{{ d.NombreDeduccion }}</td>
+            <td>{{ d.PorcentajeAplicado }}</td>
+            <td>{{ d.MontoDeducido }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No hay deducciones registradas para esta semana.</p>
+  {% endif %}
+
+  <div class="contenedor_botones" style="margin-top:30px;">
+    <a href="{% url 'AppEmpleado:planilla_semanal' %}" class="boton_consulta">← Volver</a>
+  </div>
+</body>
+</html>

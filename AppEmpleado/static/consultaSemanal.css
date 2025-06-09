@@ -1,0 +1,111 @@
+/* Fondo oscuro, tipografía y espaciado */
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Contenedor del título */
+.contenedor_titulo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+#titulo {
+    font-size: 2rem;
+    color: #ffffff;
+}
+
+/* estilos de tabla */
+.tabla {
+    width: 100%;                /* ocupa todo el ancho del contenedor */
+    max-width: 1200px;          /* opcional, para no estirarse demasiado */
+    margin: 0 auto 30px;        /* centrada y con espacio abajo */
+    border-collapse: collapse;  /* elimina espacios entre celdas */
+    background-color: #2e2e2e;  /* un fondo suave */
+    overflow-x: auto;           /* agrega scroll horizontal si es muy ancha */
+}
+
+.tabla th,
+.tabla td {
+    border: 1px solid #444444;  /* líneas definidas */
+    padding: 12px 8px;          /* espacio interno */
+    text-align: center;         /* centra el contenido */
+    color: #ffffff;
+    font-size: 0.95rem;
+}
+
+.tabla th {
+    background-color: #333333;  /* encabezados un tono más oscuro */
+    font-weight: bold;
+}
+
+.tabla tr:nth-child(even) {
+    background-color: #252525;  /* filas pares alternas */
+}
+
+.tabla tr:hover {
+    background-color: #3b3b3b;  /* resaltado al pasar el ratón */
+}
+
+/* contenedor para scroll si la tabla supera el ancho */
+.tabla-container {
+    overflow-x: auto;
+    margin-bottom: 30px;
+}
+
+
+/* Contenedor de botones */
+.contenedor_botones {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;       /* separación horizontal */
+    margin-top: 20px;
+}
+
+/* Contenedor para cada botón (clase nueva) */
+.contenedor_boton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Botón de consulta (clase original) */
+.boton_consulta {
+    width: 200px;
+    height: 50px;
+    font-size: 1.1rem;
+    background-color: #444444;
+    color: #ffffff;
+    border: 2px solid #444444;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+    
+    /* Centrado de texto dentro del botón */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.boton_consulta:hover {
+    background-color: #666666;
+    border-color: #666666;
+}
+
+/* Enlaces dentro de las tablas, heredan color y sin subrayado */
+a {
+  color: inherit;       /* mismo color que el texto de la celda */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
