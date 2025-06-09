@@ -90,9 +90,6 @@ def insertar_empleado(request):
         #formato de fecha
         fecha = datetime.strptime(fecha_nacimiento, '%Y-%m-%d')
         fecha_nacimiento = fecha.date()
-
-        print("Datos recibidos para insertar empleado:")
-        print(f"Username: {username}, Tipo Usuario: {tipo_usuario}, Nombre Empleado: {nombre}, ID Tipo Documento: {id_tipo_documento}, Valor Documento: {valor_documento},  Fecha Nacimiento: {fecha_nacimiento}, ID Puesto: {id_puesto}, ID Departamento: {id_departamento}")
               
         id_usuario = request.session.get("_auth_user_id")
         ip_usuario = request.session.get("_auth_user_ip")
@@ -118,3 +115,78 @@ def insertar_empleado(request):
 
     # Si no es POST AJAX
     return JsonResponse({"success": False, "error": "Método no permitido."}, status=400)
+
+
+
+def editar_empleado(request):
+    if request.method == "POST":
+        
+        # Obtener los datos del formulario
+        id_empleado = request.POST.get('id_empleado', '').strip()
+        nombre = request.POST.get("nombre", "").strip()
+        id_tipo_documento = request.POST.get("id_tipo_documento", "").strip()
+        valor_documento = request.POST.get("valor_documento", "").strip()
+        fecha_nacimiento = request.POST.get("fecha_nacimiento", "").strip()
+        id_puesto = request.POST.get("id_puesto", "").strip()
+        id_departamento = request.POST.get("id_departamento", "").strip()
+
+        #formato de fecha
+        fecha = datetime.strptime(fecha_nacimiento, '%Y-%m-%d')
+        fecha_nacimiento = fecha.date()
+              
+        id_usuario = request.session.get("_auth_user_id")
+        ip_usuario = request.session.get("_auth_user_ip")
+
+        try:
+            #Asegurar la conexion
+            connection.ensure_connection()
+            conn = connection.connection
+            
+
+            conn.execute(
+                "EXEC dbo.Sp_EditarEmpleado ?, ?, ?, ?, ?, ?, ?, ?, ?",
+                [id_usuario, ip_usuario, int(id_empleado) ,nombre, int(id_tipo_documento), valor_documento, 
+                 fecha_nacimiento, int(id_puesto), int(id_departamento)]
+            )
+
+            # Si no hay excepción, devolvemos JSON de éxito
+            return JsonResponse({"success": True, "mensaje": "Datos editados correctamente"})
+
+        except Exception as e:
+            # Capturar cualquier error que lance el THROW del SP
+            print(f"Error al editar empleado: {e}, ")
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+    # Si no es POST AJAX
+    return JsonResponse({"success": False, "error": "Método no permitido."}, status=400)
+
+
+
+    
+def consultar_empleado(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        id_empleado = request.GET.get('id_empleado', '').strip()
+        try:
+            connection.ensure_connection()
+            conn = connection.connection
+            row = conn.execute(
+                "EXEC dbo.Sp_ConsultarEmpleado ?",
+                [int(id_empleado)]
+            ).fetchone()
+
+            if not row:
+                return JsonResponse({"success": False, "error": "Empleado no encontrado"}, status=404)
+
+            empleado = {
+                "nombre": row[0],
+                "tipoDocumento":row[1],
+                "valorDocumento":row[2],
+                "fechaNacimiento":row[3].strftime('%Y-%m-%d') if row[3] else None,
+                "departamento": row[4],
+                "puesto": row[5],
+            }
+            return JsonResponse({"success": True, "empleado": empleado})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "error": "Invalid request"}, status=400)

@@ -110,8 +110,8 @@
         <td>{{ empleado.nombre }}</td>
         <td>{{ empleado.puesto }}</td>
         <td class="acciones">
-          <button class="boton_consultar" onclick="consultarEmpleado('{{ empleado.identificacion }}')">Consultar</button>
-          <button class="boton_modificar" onclick="modificarEmpleado('{{ empleado.identificacion }}')">Modificar</button>
+          <button class="boton_consultar" onclick="consultarEmpleado('{{ empleado.id }}')">Consultar</button>
+          <button class="boton_modificar" onclick="modificarEmpleado('{{ empleado.id }}')">Modificar</button>
           <button class="boton_borrar" onclick="borrarEmpleado('{{ empleado.identificacion }}')">Borrar</button>
           <button class="boton_movimientos" onclick="verMovimientos('{{empleado.identificacion}}','{{empleado.nombre}}')">Movimientos</button>
         </td>
@@ -124,12 +124,13 @@
   <!-- Modal Consultar Empleado -->
   <div id="modalConsultarEmpleado" class="modal">
     <div class="modal-contenido">
-      <span class="cerrar-consultar">&times;</span>
+      <span class="cerrar-consultar"></span>
       <h2>Información del Empleado</h2>
       <p><strong>Cédula:</strong> <span id="info-identificacion"></span></p>
       <p><strong>Nombre:</strong> <span id="info-nombre"></span></p>
+      <p><strong>Fecha de Nacimiento:</strong> <span id="info-fecha-nacimiento"></span></p>
       <p><strong>Puesto:</strong> <span id="info-puesto"></span></p>
-      <p><strong>Saldo Vacaciones:</strong> <span id="info-vacaciones"></span></p>
+      <p><strong>Departamento:</strong> <span id="info-departamento"></span></p>
     </div>
   </div>
 
@@ -151,35 +152,57 @@
     <!-- Modal Modificar Empleado -->
     <div id="modalModificarEmpleado" class="modal">
         <div class="modal-contenido">
-        <span class="cerrar-modificar">&times;</span>
-        <h2>Modificar Empleado</h2>
+        <span class="cerrar-modificar"></span>
+        <h2><center>Inserte los nuevos Datos</center></h2>
         <form id="formModificarEmpleado" method="POST">
             {% csrf_token %}
-            <input type="hidden" id="ident_old" name="ident_old">
+            <input type="hidden" id="E-id-empleado" name="id_empleado">
             
-            <label for="ident_new">Documento de Identidad:</label>
-            <input type="text" id="ident_new" name="ident_new" required>
-            <br><br>
-            
-            <label for="nombre_mod">Nombre:</label>
-            <input type="text" id="nombre_mod" name="nombre" required>
-            <br><br>
-            
-            <label for="puesto_mod">Puesto:</label>
-            <select id="puesto_mod" name="puesto" required>
-            <option value="">-- Seleccione --</option>
-            <option value="Cajero">Cajero</option>
-            <option value="Camarero">Camarero</option>
-            <option value="Cuidador">Cuidador</option>
-            <option value="Conductor">Conductor</option>
-            <option value="Asistente">Asistente</option>
-            <option value="Recepcionista">Recepcionista</option>
-            <option value="Fontanero">Fontanero</option>
-            <option value="Niñera">Niñera</option>
-            <option value="Conserje">Conserje</option>
-            <option value="Albañil">Albañil</option>
-            </select>
-            <br><br>
+            <div class="campos-form">
+              <label for="nombre">Nombre</label>
+              <input type="text" id="E-nombre" name="nombre" required >
+              <br><br>
+              <label for="id_tipo_documento">Tipo de Identificacion:</label>
+              <select id="editar_id_tipo_documento" name="id_tipo_documento" required>
+                <option value="">-- Seleccione --</option>
+                <option value=1>Cédula Nacional</option>
+                <option value=2>Cédula Residente</option>
+                <option value=3>Pasaporte</option>
+                <option value=4>Cédula Jurídica</option>
+                <option value=5>Permiso de Trabajo</option>
+                <option value=6>Cédula Extranjera</option>
+              </select>
+              <br><br>
+
+              <label for="valor_documento">Identificacion</label>
+              <input type="text" id="E-identificacion" name="valor_documento" required>
+              <br><br>        
+              <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
+              <input type="date" id="E-fecha-nacimiento" name="fecha_nacimiento" required>
+              <br><br>
+
+              <label for="id_puesto">Puesto:</label>
+              <select id="E-puesto" name="id_puesto">
+                <option value="">-- Seleccione --</option>
+                <option value=1>Electricista</option>
+                <option value=2>Auxiliar de laboratorio</option>
+                <option value=3>Operador de máquina</option>
+                <option value=4>Soldador</option>
+                <option value=5>Técnico de mantenimiento</option>
+                <option value=6>Bodeguero</option>
+              </select>
+              <br><br>
+
+              <label for="id_departamento">Departamento:</label>
+              <select id="E-departamento" name="id_departamento">
+                <option value="">-- Seleccione --</option>
+                <option value=1>Enlaminado</option>
+                <option value=2>Laboratorio</option>
+                <option value=3>Bodega de materiales</option>
+                <option value=4>Bodega de producto terminado</option>
+              </select>
+              <br><br>
+            </div>
             
             <button type="submit">Guardar Cambios</button>
         </form>
