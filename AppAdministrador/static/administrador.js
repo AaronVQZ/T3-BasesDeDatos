@@ -34,10 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button class="boton_modificar" onclick="modificarEmpleado('${empleado.id}')">
                             Modificar
                         </button>
-                        <button class="boton_borrar" onclick="borrarEmpleado('${empleado.identificacion}', '${empleado.nombre}')">
+                        <button class="boton_borrar" onclick="borrarEmpleado('${empleado.id}', '${empleado.nombre}')">
                             Borrar
                         </button>
-                        <button class="boton_movimientos" onclick="verMovimientos('${empleado.identificacion}','${empleado.nombre}')">Movimientos
+                        <button class="boton_impersonar" onclick="impersonarEmpleado('${empleado.id}')">Impersonar
                         </button>
                     </td>
                 </tr>
@@ -184,15 +184,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 //------------------------------------------------------------------------------------------------------------------------
-    // Modal Borrar. Para borardo logico de un empleado
+    // Modal Borrar. Para borrado logico de un empleado
     window.borrarEmpleado = function(id, nombre) {
         // Mostrar el modal de confirmación de borrado
-        document.getElementById('borrar-identificacion').textContent = id;
+        document.getElementById('borrar_id_empleado').value = id;
         document.getElementById('borrar-nombre').textContent         = nombre;
         document.getElementById('modalBorrarEmpleado').style.display = 'flex';
     };
     const spanCerrarBorrar = document.querySelector('.cerrar-borrar');
     const modalBorrar = document.getElementById('modalBorrarEmpleado');
+    document.getElementById('cancelar-borrar').addEventListener('click', () => modalBorrar.style.display = 'none');
     
     spanCerrarBorrar.addEventListener('click', () => modalBorrar.style.display = 'none');
     window.addEventListener('click', e => {
@@ -202,18 +203,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const csrfToken = getCookie('csrftoken');
 
     //Botones de confirmación y cancelación del modal de borrado
-    document.getElementById('cancelar-borrar').addEventListener('click', () => enviarBorrado(0));
-    document.getElementById('confirmar-borrar').addEventListener('click', () => enviarBorrado(1));
 
-    // Función para enviar la solicitud de borrado
-    function enviarBorrado(confirmar) {
-        const id = document.getElementById('borrar-identificacion').textContent;
-        const fd = new FormData();
-        fd.append('identificacion', id);
-        fd.append('confirmar', confirmar);
-        fetch('borrar-empleado/', {
+    
+    document.getElementById('formEliminarEmpleado').addEventListener('submit', function(e) {
+        e.preventDefault();    
+        fetch('eliminar_empleado/', {
             method: 'POST',
-            body: fd,
+            body: new FormData(this),
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
             credentials: 'same-origin',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
@@ -222,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(r => r.json())
         .then(data => { 
-            if (confirmar) {
+            if (data.success) {
                 Swal.fire({
                     position: 'center',
                     icon: 'success',
@@ -243,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(err => { console.error(err); alert('Error de conexión'); })
         .finally(() => document.getElementById('modalBorrarEmpleado').style.display = 'none');
-    }
+    });
 
     //------------------------------------------------------------------------------------------------------------------------
     // Modal Modificar
@@ -308,6 +305,45 @@ document.addEventListener('DOMContentLoaded', function() {
         })     
     });
 
+    window.impersonarEmpleado = function(id) {
+        fetch(`impersonar_empleado/?id_empleado=${encodeURIComponent(id)}`, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Ahora estás impersonando al empleado',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    },
+                }
+                
+
+            ).then(() => {
+                    window.location.href = data.redirect; 
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: data.error || 'Error al impersonar empleado',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        })
+        .catch(err => { console.error(err); alert('Error de conexión'); });
+    }
+
     //------------------------------------------------------------------------------------------------------------------------
     // Helper para CSRF
     function getCookie(name) {
@@ -324,11 +360,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 //comentario
-function verMovimientos(identificacion, nombre) {
+function verMovimientos(id) {
     window.open(
     //window.location.href = `/home/movimientos/${identificacion}?nombre=${encodeURIComponent(nombre)}`;
-    `/home/movimientos/${identificacion}?nombre=${encodeURIComponent(nombre)}`,
-    'movimientos', // Nombre de la ventana
+    `/home/movimientos/${id}`,
+    'Impersonando', // Nombre de la ventana
     );
     
 

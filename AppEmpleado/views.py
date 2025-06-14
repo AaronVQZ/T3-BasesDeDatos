@@ -4,7 +4,7 @@ from django.db import connection
 
 def empleado_home(request):
     print("DEBUG: entrando en empleado_home()")
-    return render(request, 'empleado.html')
+    return render(request, 'empleado.html', {'is_admin': request.session.get('is_admin', False)})
 
 
 def consultar_planilla_semanal(request):

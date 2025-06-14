@@ -26,6 +26,18 @@
       </a>
     </div>
   </div>
+  <br>
+  <br>
+  {% if is_admin %}
+    <div class="contenedor_botones" style="margin-top:30px;">
+      <div class="contenedor_boton">
+        <a href="{% url 'AppAdministrador:home' %}" class="boton_consulta">
+          Volver al Panel de Administrador
+        </a>
+      </div>
+    </div>
+  {% endif %}
+      
 
 </body>
 </html>

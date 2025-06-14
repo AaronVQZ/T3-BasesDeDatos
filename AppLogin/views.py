@@ -24,7 +24,6 @@ def login(request):
             username = request.POST.get('username', '')
             password = request.POST.get('password', '')
 
-        print(f"Datos recibidos: username={username}, password={password}")
 
         try:
             connection.ensure_connection()
@@ -41,10 +40,6 @@ def login(request):
 
             es_valido, es_admin, id_usuario, mensaje = result
 
-
-            print(f"Es válido: {es_valido},Es Administrador {es_admin} Mensaje: {mensaje}")
-            print(f"codigo_error: {codigo_error}")
-
             if codigo_error != 0:
                 if codigo_error == 1:
                     raise excepciones.Error_Usuario()
@@ -58,7 +53,7 @@ def login(request):
                 request.session['_auth_user_backend'] = 'django.contrib.auth.backends.ModelBackend'
                 request.session['_auth_user_ip'] = ip
                 request.user = Usuario(id_usuario=id_usuario, username=username)
-                print("ok!")
+                
                 # Si el usuario es administrador, redirigir a la página de administración
                 if es_admin:
                     request.session['is_admin'] = True
