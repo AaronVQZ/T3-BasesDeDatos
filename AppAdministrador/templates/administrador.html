@@ -113,7 +113,7 @@
           <button class="boton_consultar" onclick="consultarEmpleado('{{ empleado.id }}')">Consultar</button>
           <button class="boton_modificar" onclick="modificarEmpleado('{{ empleado.id }}')">Modificar</button>
           <button class="boton_borrar" onclick="borrarEmpleado('{{ empleado.id }}','{{empleado.nombre}}')">Borrar</button>
-          <button class="boton_movimientos" onclick="verMovimientos('{{empleado.identificacion}}','{{empleado.nombre}}')">Movimientos</button>
+          <button class="boton_impersonar" onclick="impersonarEmpleado('{{empleado.id}}')">Impersonar</button>
         </td>
       </tr>
       {% endfor %}

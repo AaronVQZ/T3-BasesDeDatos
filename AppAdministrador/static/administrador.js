@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button class="boton_borrar" onclick="borrarEmpleado('${empleado.id}', '${empleado.nombre}')">
                             Borrar
                         </button>
-                        <button class="boton_movimientos" onclick="verMovimientos('${empleado.identificacion}','${empleado.nombre}')">Movimientos
+                        <button class="boton_impersonar" onclick="impersonarEmpleado('${empleado.id}')">Impersonar
                         </button>
                     </td>
                 </tr>
@@ -305,6 +305,45 @@ document.addEventListener('DOMContentLoaded', function() {
         })     
     });
 
+    window.impersonarEmpleado = function(id) {
+        fetch(`impersonar_empleado/?id_empleado=${encodeURIComponent(id)}`, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Ahora estás impersonando al empleado',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    },
+                }
+                
+
+            ).then(() => {
+                    window.location.href = data.redirect; 
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error!',
+                    text: data.error || 'Error al impersonar empleado',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        })
+        .catch(err => { console.error(err); alert('Error de conexión'); });
+    }
+
     //------------------------------------------------------------------------------------------------------------------------
     // Helper para CSRF
     function getCookie(name) {
@@ -321,11 +360,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 //comentario
-function verMovimientos(identificacion, nombre) {
+function verMovimientos(id) {
     window.open(
     //window.location.href = `/home/movimientos/${identificacion}?nombre=${encodeURIComponent(nombre)}`;
-    `/home/movimientos/${identificacion}?nombre=${encodeURIComponent(nombre)}`,
-    'movimientos', // Nombre de la ventana
+    `/home/movimientos/${id}`,
+    'Impersonando', // Nombre de la ventana
     );
     
 

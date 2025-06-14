@@ -1,10 +1,9 @@
-from django.shortcuts import render
+from Excepciones import excepciones as excepciones
 from django.http import JsonResponse
+from django.shortcuts import render
+from datetime import datetime, date
 from django.db import connection
 import json
-from datetime import datetime, date
-from Excepciones import excepciones as excepciones
-
 
 # Create your views here.
 def home(request):
@@ -22,10 +21,6 @@ def home(request):
                       'error': 'Error al obtener los empleados: ' + str(e)})
     
 
-
-
-#-------------------------------------------------------------
-# Función para obtener empleados desde la base de datos
 def obtener_empleados(search_term='',id_usuario=None,ip_usuario=None):
     
     try:    
@@ -52,8 +47,7 @@ def obtener_empleados(search_term='',id_usuario=None,ip_usuario=None):
         print(f"Error al obtener empleados: {e}")
         return []  
     
-#-------------------------------------------------------------
-# Función para manejar la búsqueda de empleados desde AJAX
+
 def buscar_empleados(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         try:
@@ -71,8 +65,6 @@ def buscar_empleados(request):
         return JsonResponse({"error": "Invalid request"}, status=400)
 
 
-#-------------------------------------------------------------
-# Función para insertar un nuevo empleado
 def insertar_empleado(request):
     if request.method == "POST":
         
@@ -115,7 +107,6 @@ def insertar_empleado(request):
 
     # Si no es POST AJAX
     return JsonResponse({"success": False, "error": "Método no permitido."}, status=400)
-
 
 
 def editar_empleado(request):
@@ -161,7 +152,6 @@ def editar_empleado(request):
     return JsonResponse({"success": False, "error": "Método no permitido."}, status=400)
 
 
-    
 def consultar_empleado(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         id_empleado = request.GET.get('id_empleado', '').strip()
@@ -211,3 +201,13 @@ def eliminar_empleado(request):
             return JsonResponse({"success": False, "error": str(e)}, status=500)
 
     return JsonResponse({"success": False, "error": "Método no permitido."}, status=400)
+
+
+def impersonar_empleado(request):
+    if request.method == "GET":
+        id_empleado = request.GET.get('id_empleado', '').strip()
+
+        try:
+            return JsonResponse({"success": True, "redirect": "/empleado"})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
