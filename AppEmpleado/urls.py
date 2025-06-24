@@ -11,4 +11,5 @@ urlpatterns = [
     path('planilla/semanal/detalle/<int:semana_id>/', views.detalle_salario_semanal,     name='detalle_salario_semanal'),
     path('planilla/mensual/',  views.consultar_planilla_mensual,  name='planilla_mensual'),
     path('planilla/mensual/deducciones/<int:mes_id>/', views.detalle_deducciones_mensual, name='detalle_deducciones_mensual'),
+    path('movimientos/', views.consultar_movimientos, name='consultar_movimientos'),
 ]

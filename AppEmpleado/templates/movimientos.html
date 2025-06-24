@@ -1,0 +1,44 @@
+{# AppEmpleado/templates/planilla_semanal.html #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movimientos</title>
+  <link rel="stylesheet" href="{% static 'consultaSemanal.css' %}">
+</head>
+<body>
+
+  <div class="contenedor_titulo">
+    <h1>Movimientos</h1>
+  </div>
+
+  {% if movimientos %}
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Monto</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in movimientos %}
+          <tr>
+            <td>{{ m.Nombre }}</td>
+            <td>{{ m.Monto }}</td>
+            <td>{{ m.FechaMovimiento }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+  {% else %}
+    <p>No hay movimientos para mostrar.</p>
+  {% endif %}
+
+  <div class="contenedor_botones" style="margin-top:30px;">
+    <a href="{% url 'AppEmpleado:home' %}" class="boton_consulta">← Volver</a>
+  </div>
+
+</body>
+</html>

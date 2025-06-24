@@ -190,3 +190,34 @@ def detalle_deducciones_mensual(request, mes_id):
     return render(request,
                   'detalle_deducciones_mensual.html',
                   {'mes_id': mes_id, 'detalle': detalle})
+
+
+def consultar_movimientos(request):
+
+    user_id = request.session.get('_auth_user_id')
+    if not user_id:
+        return redirect('login')
+
+    #id de empleado cuando se esta impersonando
+    if user_id == 1:
+        user_id = request.session.get('_id_empleado_impersonado')
+
+    movimientos = []
+    try:
+        connection.ensure_connection()
+        conn = connection.connection
+
+        sql = """
+            EXEC dbo.Sp_ConsultarMovimiento
+              @InIdUsuario     = ?,
+              @OutResultCode = ? OUTPUT
+        """
+        res = conn.execute(sql, (user_id, 0))
+        cols, rows = [c[0] for c in res.description], res.fetchall()
+
+        movimientos = [dict(zip(cols, r)) for r in rows]
+    except Exception as e:
+        print("EXCEPTION: fallo SpConsultarMovimientos")
+        print(e)
+
+    return render(request, 'movimientos.html', {'movimientos': movimientos})
