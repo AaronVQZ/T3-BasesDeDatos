@@ -17,6 +17,11 @@ def consultar_planilla_semanal(request):
     ip_origen = request.META.get('REMOTE_ADDR', '')
     print(f"DEBUG: IP origen = {ip_origen}")
 
+
+    #id de empleado cuando se esta impersonando
+    if user_id == 1:
+        user_id = request.session.get('_id_empleado_impersonado')
+        
     planillas = []
     try:
         connection.ensure_connection()
@@ -46,6 +51,10 @@ def detalle_deducciones_semanal(request, semana_id):
     user_id = request.session.get('_auth_user_id')
     if not user_id:
         return redirect('login')
+    
+    #id de empleado cuando se esta impersonando
+    if user_id == 1:
+        user_id = request.session.get('_id_empleado_impersonado')
 
     ip_origen = request.META.get('REMOTE_ADDR', '')
     detalle = []
@@ -80,6 +89,11 @@ def detalle_salario_semanal(request, semana_id):
     if not user_id:
         return redirect('login')
 
+    #id de empleado cuando se esta impersonando
+    if user_id == 1:
+        user_id = request.session.get('_id_empleado_impersonado')
+
+
     ip_origen = request.META.get('REMOTE_ADDR', '')
     detalle = []
     try:
@@ -113,6 +127,10 @@ def consultar_planilla_mensual(request):
     if not user_id:
         return redirect('login')
 
+    #id de empleado cuando se esta impersonando
+    if user_id == 1:
+        user_id = request.session.get('_id_empleado_impersonado')
+
     ip_origen = request.META.get('REMOTE_ADDR', '')
     meses = []
     try:
@@ -142,6 +160,10 @@ def detalle_deducciones_mensual(request, mes_id):
     user_id = request.session.get('_auth_user_id')
     if not user_id:
         return redirect('login')
+
+    #id de empleado cuando se esta impersonando
+    if user_id == 1:
+        user_id = request.session.get('_id_empleado_impersonado')
 
     ip_origen = request.META.get('REMOTE_ADDR', '')
     detalle = []

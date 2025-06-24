@@ -327,10 +327,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                 }
                 
-
+                
             ).then(() => {
-                    window.location.href = data.redirect; 
-                });
+                window.location.href = data.redirect; 
+                console.log(`Impersonando empleado con ID: ${id}`);
+            });
             } else {
                 Swal.fire({
                     icon: 'error',

@@ -33,8 +33,7 @@ def login(request):
             # Validar usuario
             result = conn.execute(
                     """
-                     DECLARE @OutCodigoError INT;
-                     EXEC dbo.sp_ValidarUsuario @InUsername = ?, @InPassword = ?, @InIpUsuario = ?, @OutCodigoError = ?
+                     EXEC dbo.sp_ValidarUsuario @InUsername = ?, @InPassword = ?, @InIpUsuario = ?, @OutCodigoError = ? OUTPUT
                     """,
                     (username, password, ip, codigo_error)).fetchone()
 
