@@ -132,7 +132,7 @@ body {
 
 .boton_consultar,
 .boton_modificar,
-.boton_movimientos,
+.boton_impersonar,
 .boton_borrar{
     padding: 5px 10px;
     border: none;
@@ -155,14 +155,14 @@ body {
     background-color: #444444;
     color: white;
 }
-.boton_movimientos {
+.boton_impersonar {
     background-color: #444444;
     color: white;
 }
 
 .boton_consultar:hover,
 .boton_modificar:hover,
-.boton_movimientos:hover,
+.boton_impersonar:hover,
 .boton_borrar:hover,
 #confirmar-borrar:hover,
 #cancelar-borrar:hover 

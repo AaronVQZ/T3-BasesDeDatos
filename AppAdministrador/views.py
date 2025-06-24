@@ -29,12 +29,11 @@ def obtener_empleados(search_term='',id_usuario=None,ip_usuario=None):
         codigo_error = 0
 
         empleados = conn.execute("""
-                DECLARE @OutCodigoError INT;
                 EXEC Sp_BuscarEmpleado 
                 @InSearchTerm = ?
                ,@InIdUsuario = ?
                ,@InIpUsuario = ?
-               ,@OutCodigoError = ?
+               ,@OutCodigoError = ? OUTPUT
                                  
                 """,(search_term, int(id_usuario), str(ip_usuario), codigo_error)).fetchall()
                 
@@ -85,6 +84,7 @@ def insertar_empleado(request):
               
         id_usuario = request.session.get("_auth_user_id")
         ip_usuario = request.session.get("_auth_user_ip")
+        codigo_error = 0
 
         try:
             #Asegurar la conexion
@@ -92,10 +92,10 @@ def insertar_empleado(request):
             conn = connection.connection
 
             conn.execute(
-                "EXEC dbo.Sp_InsertarEmpleado ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?",
+                "EXEC dbo.Sp_InsertarEmpleado ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? OUTPUT",
                 [id_usuario, ip_usuario, username, password, int(tipo_usuario), 
                  nombre, int(id_tipo_documento), valor_documento, 
-                 fecha_nacimiento, int(id_puesto), int(id_departamento)]
+                 fecha_nacimiento, int(id_puesto), int(id_departamento), codigo_error]
             )
 
             # Si no hay excepción, devolvemos JSON de éxito
@@ -127,7 +127,7 @@ def editar_empleado(request):
               
         id_usuario = request.session.get("_auth_user_id")
         ip_usuario = request.session.get("_auth_user_ip")
-
+        codigo_error = 0
         try:
             #Asegurar la conexion
             connection.ensure_connection()
@@ -135,9 +135,9 @@ def editar_empleado(request):
             
 
             conn.execute(
-                "EXEC dbo.Sp_EditarEmpleado ?, ?, ?, ?, ?, ?, ?, ?, ?",
+                "EXEC dbo.Sp_EditarEmpleado ?, ?, ?, ?, ?, ?, ?, ?, ?, ? OUTPUT",
                 [id_usuario, ip_usuario, int(id_empleado) ,nombre, int(id_tipo_documento), valor_documento, 
-                 fecha_nacimiento, int(id_puesto), int(id_departamento)]
+                 fecha_nacimiento, int(id_puesto), int(id_departamento), codigo_error]
             )
 
             # Si no hay excepción, devolvemos JSON de éxito
@@ -155,12 +155,13 @@ def editar_empleado(request):
 def consultar_empleado(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         id_empleado = request.GET.get('id_empleado', '').strip()
+        codigo_error = 0
         try:
             connection.ensure_connection()
             conn = connection.connection
             row = conn.execute(
-                "EXEC dbo.Sp_ConsultarEmpleado ?",
-                [int(id_empleado)]
+                "EXEC dbo.Sp_ConsultarEmpleado ?, ? OUTPUT",
+                [int(id_empleado), codigo_error]
             ).fetchone()
 
             if not row:
@@ -186,15 +187,16 @@ def eliminar_empleado(request):
         id_empleado = request.POST.get('id_empleado', '').strip()
         id_usuario = request.session.get("_auth_user_id")
         ip_usuario = request.session.get("_auth_user_ip")
+        codigo_error = 0
 
-        print(f"Eliminando empleado con ID: {id_empleado}")
         try:
             connection.ensure_connection()
             conn = connection.connection
             conn.execute(
-                "EXEC dbo.Sp_EliminarEmpleado ?, ?, ?",
-                [int(id_usuario), str(ip_usuario), int(id_empleado), ]
+                "EXEC dbo.Sp_EliminarEmpleado ?, ?, ?, ? OUTPUT",
+                [int(id_usuario), str(ip_usuario), int(id_empleado), codigo_error]
             )
+            
             return JsonResponse({"success": True, "mensaje": "Empleado eliminado correctamente"})
         except Exception as e:
             print(f"Error al eliminar empleado: {e}")
@@ -206,8 +208,25 @@ def eliminar_empleado(request):
 def impersonar_empleado(request):
     if request.method == "GET":
         id_empleado = request.GET.get('id_empleado', '').strip()
+        id_usuario_impersonado = 0
 
-        try:
+        try: 
+            connection.ensure_connection()
+            conn = connection.connection
+
+            
+            row = conn.execute(
+                "EXEC dbo.Sp_GetIdUsuario ?, ? OUTPUT",
+                [int(id_empleado), 0]
+            ).fetchone()
+
+            if not row:
+                return JsonResponse({"success": False, "error": "Empleado no encontrado"}, status=404)
+        
+            id_usuario_impersonado = row[0]
+            request.session['_id_empleado_impersonado'] = id_usuario_impersonado
             return JsonResponse({"success": True, "redirect": "/empleado"})
+
         except Exception as e:
+            print(f"Error al obtener ID de usuario: {e}")
             return JsonResponse({"success": False, "error": str(e)}, status=500)
